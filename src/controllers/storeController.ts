@@ -1,10 +1,15 @@
 import { RequestHandler } from "express";
 import translationConfig from "../config/translationConfig";
-import StoreModel from "../models/storeModel";
+import StoreModel from "../models/StoreModel";
 
 const defaultLang = translationConfig.defaultLang;
 
-const getStores: RequestHandler = async (req, res) => {
+
+interface GetStoresRequestParams {
+	query?: string
+}
+
+const getStores: RequestHandler<{}, {}, {}, GetStoresRequestParams> = async (req, res) => {
   const { query } = req.query;
   const lang = req.headers["accept-language"]?.split(",")[0] || defaultLang;
 

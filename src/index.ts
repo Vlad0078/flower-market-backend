@@ -4,7 +4,7 @@ import storeRouter from "./routes/storeRouter";
 import connectDB from "./config/mongodb";
 import "dotenv/config";
 import flowerRouter from "./routes/flowerRouter";
-import addAssetStores from "./devScripts/addStores";
+import orderRouter from "./routes/orderRouter";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,6 +17,7 @@ app.use(express.json());
 
 app.use("/store", storeRouter);
 app.use("/flowers", flowerRouter);
+app.use("/order", orderRouter);
 
 app.get("/", (req, res) => {
   res.send("API for Flower Market (test task for ElifTech)");

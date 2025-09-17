@@ -7,6 +7,8 @@ interface FlowerDocument extends Document {
   photo: string[];
   price: number;
   stock: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const flowerSchema = new mongoose.Schema<FlowerDocument>(
@@ -38,3 +40,4 @@ const FlowerModel =
   mongoose.model<FlowerDocument>("flowers", flowerSchema);
 
 export default FlowerModel;
+export { FlowerDocument };
