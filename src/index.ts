@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000;
 
 connectDB();
 
-app.use(cors());
+app.use(cors({origin: process.env.CLIENT_URL,}));
 
 app.use(express.json());
 
