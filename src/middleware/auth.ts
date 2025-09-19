@@ -20,22 +20,17 @@ const authUser: RequestHandler = async (req, res, next: NextFunction) => {
 
         if (user) {
           req.userId = tokenDecode.id;
+          req.userRole = user.role;
           return next();
         }
       }
     }
 
-    // esle create guest user
-    const guest = new UserModel({ name: "Guest", role: "guest" });
-    await guest.save();
+    if (req.path === "/auth" && req.baseUrl === "/user" && req.body?.createGuest === true) {
+      return next();
+    }
 
-    // generate token
-    const newToken = jwt.sign({ id: guest.id }, process.env.JWT_SECRET, { expiresIn: 3600 * 24 });
-
-    req.userId = guest.id;
-    res.locals.guestToken = newToken;
-
-    next();
+    res.status(401).json({ message: "Authentication failed" });
   } catch (error) {
     console.error("Authentication failed:", error instanceof Error ? error.stack : error);
     res.status(500).json({ message: "Authentication failed because of a server error" });

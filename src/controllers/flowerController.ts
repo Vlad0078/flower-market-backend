@@ -91,7 +91,7 @@ const addFlowerToFav: RequestHandler = async (req, res) => {
     const user = await UserModel.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(403).json({ message: "User not found" });
     }
 
     const isFav = user.favoriteFlowers.some((id) => id.toString() === flowerId);

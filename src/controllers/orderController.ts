@@ -12,7 +12,6 @@ const getOrderById: RequestHandler<{}, {}, { userId: string }, { id: string }> =
   res
 ) => {
   const { id } = req.query;
-  const token = res.locals.guestToken;
 
   const lang = req.headers["accept-language"]?.split(",")[0] || defaultLang;
 
@@ -26,7 +25,7 @@ const getOrderById: RequestHandler<{}, {}, { userId: string }, { id: string }> =
     res.status(200).json(order);
   } catch (error) {
     console.error("Could not get order:", error instanceof Error ? error.stack : error);
-    res.status(500).json({ message: "Could not get order", token });
+    res.status(500).json({ message: "Could not get order" });
   }
 };
 
@@ -38,7 +37,6 @@ const getOrderByOrderId: RequestHandler<
 > = async (req, res) => {
   const userId = req.userId;
   const { orderId } = req.params;
-  const token = res.locals.guestToken;
 
   const lang = req.headers["accept-language"]?.split(",")[0] || defaultLang;
 
@@ -49,14 +47,14 @@ const getOrderByOrderId: RequestHandler<
     });
 
     if (String(order.userId) !== userId) {
-      res.status(403).json({ message: "You are not authorized to view this order", token });
+      return res.status(403).json({ message: "You are not authorized to view this order" });
     }
 
     res.setHeader("Content-Language", lang);
     res.status(200).json({ order });
   } catch (error) {
     console.error("Could not get order:", error instanceof Error ? error.stack : error);
-    res.status(500).json({ message: "Could not get order", token });
+    res.status(500).json({ message: "Could not get order" });
   }
 };
 
@@ -73,7 +71,6 @@ interface SaveOrderReqBody {
 const saveOrder: RequestHandler<{}, {}, SaveOrderReqBody> = async (req, res) => {
   const userId = req.userId;
   const { orderItems, name, email, phone, address, timeZone } = req.body;
-  const token = res.locals.guestToken;
 
   try {
     const flowerIds = orderItems.map((item) => item.flowerId);
@@ -91,7 +88,7 @@ const saveOrder: RequestHandler<{}, {}, SaveOrderReqBody> = async (req, res) => 
     for (const item of orderItems) {
       const flower = flowers.find((f) => f._id.toString() === item.flowerId);
       if (!flower) {
-        return res.status(422).json({ message: `Flower not found: ${item.flowerId}`, token });
+        return res.status(422).json({ message: `Flower not found: ${item.flowerId}` });
       }
 
       itemsWithPrices.push({ ...item, price: flower.price });
@@ -99,7 +96,7 @@ const saveOrder: RequestHandler<{}, {}, SaveOrderReqBody> = async (req, res) => 
     }
 
     if (itemsWithPrices.length < 1) {
-      return res.status(422).json({ message: "Empty cart", token });
+      return res.status(422).json({ message: "Empty cart" });
     }
 
     // form an order
@@ -124,10 +121,10 @@ const saveOrder: RequestHandler<{}, {}, SaveOrderReqBody> = async (req, res) => 
     });
     await newOrder.save();
 
-    res.status(200).json({ message: "Order saved", orderId: newOrder.orderId, token });
+    res.status(200).json({ message: "Order saved", orderId: newOrder.orderId });
   } catch (error) {
     console.error("Could not save order:", error instanceof Error ? error.stack : error);
-    res.status(500).json({ message: "Could not save order", token });
+    res.status(500).json({ message: "Could not save order" });
   }
 };
 
